@@ -18,8 +18,8 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "ordering", nullable = false)
-    private int ordering;
+//    @Column(name = "ordering", nullable = false)
+//    private int ordering;
 
     @OneToMany(mappedBy="category", fetch = FetchType.EAGER)
     @Fetch(FetchMode.SELECT)
@@ -27,9 +27,9 @@ public class Category {
 
     public Category() { }
 
-    public Category(String name, int ordering) {
+    public Category(String name) {
         this.name = name;
-        this.ordering = ordering;
+        //this.ordering = ordering;
     }
 
     public int getId() {
@@ -48,13 +48,13 @@ public class Category {
         this.name = name;
     }
 
-    public int getOrdering() {
-        return ordering;
-    }
-
-    public void setOrdering(int ordering) {
-        this.ordering = ordering;
-    }
+//    public int getOrdering() {
+//        return ordering;
+//    }
+//
+//    public void setOrdering(int ordering) {
+//        this.ordering = ordering;
+//    }
 
     public Set<Item> getItems() {
         return items;
@@ -69,7 +69,7 @@ public class Category {
         return "Category{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", ordering=" + ordering +
+                //", ordering=" + ordering +
                 '}';
     }
 }
