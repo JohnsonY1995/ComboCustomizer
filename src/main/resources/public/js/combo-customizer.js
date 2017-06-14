@@ -22,6 +22,14 @@ mainApp.controller('comboController', function($scope, $http) {
     };
     $scope.getAllCategories();
 
+    $scope.allItemDependencies = [];
+    $scope.getAllItemDependencies = function() {
+        $http.get(restEndpoint + "itemdependencies").then(function(response) {
+            $scope.allItemDependencies = response.data;
+        });
+    };
+    $scope.getAllItemDependencies();
+
 
     $scope.addNewItem = function() {
         //var data = "name=" + $scope.newItem.name + "&categoryId=" + $scope.newItem.category;
@@ -83,6 +91,7 @@ mainApp.controller('comboController', function($scope, $http) {
 
         }).then(function successCallback(response) {
             console.log(response);
+            $scope.getAllItemDependencies();
         }, function errorCallback(response) {
             console.error(response);
         });

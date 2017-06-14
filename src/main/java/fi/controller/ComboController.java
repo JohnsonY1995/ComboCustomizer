@@ -59,7 +59,7 @@ public class ComboController {
                 dependeesArray.put(dependee.getName());
             }
             dependency.put("depender", item.getName());
-            dependency.put("dependents", dependeesArray);
+            dependency.put("dependees", dependeesArray);
             baseArray.put(dependency);
         }
 

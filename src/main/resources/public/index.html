@@ -88,9 +88,9 @@
                 <td>Depender</td>
                 <td>Dependee</td>
             </tr>
-            <tr>
-                <td>X</td>
-                <td>Y</td>
+            <tr ng-repeat="itemDependency in allItemDependencies">
+                <td>{{ itemDependency.depender }}</td>
+                <td><span ng-repeat="dependee in itemDependency.dependees">{{ dependee }}. </span></td>
             </tr>
         </table>
         <h4>Add Item Dependency</h4>
