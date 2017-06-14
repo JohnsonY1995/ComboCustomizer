@@ -85,8 +85,8 @@
 
                 $scope.execution = {};
                 $scope.execution.done = false;
+                $scope.execution.failed = false;
                 $scope.execution.processing = true;
-                //var data = "{\"items\": executeItemIds + "}";
                 var data = {"items": executeItemIds };
                 $http({
                     url: restEndpoint + "execute",
@@ -103,7 +103,9 @@
                     $scope.execution.processing = false;
                     console.log(response);
                   }, function errorCallback(response) {
-                    $scope.execution.done = true;
+                    $scope.execution.failed = true;
+                    $scope.execution.result = response.data.failReason;
+                    $scope.execution.done = false;
                     $scope.execution.processing = false;
                     console.error(response);
                   });
@@ -148,7 +150,12 @@
         </p>
         <div class="panel panel-success" ng-if="execution.done">
             <div class="panel-heading">Done (elapsed time: <span ng-bind="execution.elapsedMs"></span>ms)</div>
-            <div class="panel-body" ng-bind="execution.result"></div>
+            <div class="panel-body" style="white-space: pre-line;" ng-bind="execution.result"></div>
+        </div>
+
+        <div class="panel panel-danger" ng-if="execution.failed">
+            <div class="panel-heading">Failed</div>
+            <div class="panel-body" style="white-space: pre-line;" ng-bind="execution.result"></div>
         </div>
 
         <hr />

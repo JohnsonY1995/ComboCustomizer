@@ -15,6 +15,7 @@ public class ItemService {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
     private static final int ITEM_EXEC_TIME = 1000;
+    private static List<String> failReasons = new ArrayList<>();
 
     @Autowired
     ItemDAO itemDAO;
@@ -36,9 +37,18 @@ public class ItemService {
     }
 
     public Map<String,Object> executeCombo(final List<Integer> executeItemIds) throws InterruptedException {
+        final Map<String, Object> resultMap = new HashMap<>();
+
         final LinkedHashSet<Item> executeItems = itemDAO.getExecuteItemsByIds(executeItemIds);
         if (!isComboValid(executeItems)) {
-            return null;
+            resultMap.put("success", false);
+
+            String failure = "";
+            for (final String failReason : failReasons) {
+                failure += failReason;
+            }
+            resultMap.put("failReason", failure);
+            return resultMap;
         }
 
         // Execute Items in order
@@ -55,19 +65,19 @@ public class ItemService {
         executionResult = executionResult.substring(0, executionResult.length() - 3);
         final long msElapsed = System.currentTimeMillis() - startTime;
 
-        final Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("result", "Your pair of shoes was built: " + executionResult);
-        resultMap.put("msElapsed", msElapsed);
-
         logger.info("Result: " + executionResult);
         logger.info("Time elapsed (ms): " + msElapsed);
 
+        resultMap.put("success", true);
+        resultMap.put("result", "Your pair of shoes was built: " + executionResult);
+        resultMap.put("msElapsed", msElapsed);
         return resultMap;
     }
 
 
     // Validate combo
     private boolean isComboValid(final LinkedHashSet<Item> items) {
+        failReasons.clear();
         // Traverse through ordered list of selected items
         final Set<Item> passedItems = new HashSet<>();
         final Iterator<Item> itemsIterator = items.iterator();
@@ -81,12 +91,12 @@ public class ItemService {
                 final Item dependeeItem = dependenciesIterator.next();
                 logger.debug("Dependency: " + item + " depends on " + dependeeItem);
                 if (!passedItems.contains(dependeeItem)) {
-                    logger.error("Dependency not satisfied: " + item + " requires " + dependeeItem);
-                    return false;
+                    failReasons.add("Dependency not satisfied: " + item + " requires " + dependeeItem + "\n");
+                    logger.error("Item dependency error: " + item + " requires " + dependeeItem);
                 }
             }
         }
-        return true;
+        return failReasons.size() == 0;
     }
 
 

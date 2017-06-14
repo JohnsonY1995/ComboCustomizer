@@ -80,10 +80,10 @@ public class ComboController {
     public ResponseEntity executeCombo(@RequestBody ItemIdArrayWrapper items) throws InterruptedException {
 
         final Map<String, Object> resultMap = itemService.executeCombo(items.getItems());
-        if (resultMap != null) {
+        if (resultMap.get("success").equals(true)) {
             return new ResponseEntity(resultMap, HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(resultMap, HttpStatus.BAD_REQUEST);
         }
     }
 
