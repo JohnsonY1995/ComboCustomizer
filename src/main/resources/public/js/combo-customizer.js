@@ -24,13 +24,14 @@ mainApp.controller('comboController', function($scope, $http) {
 
 
     $scope.addNewItem = function() {
-        var data = "name=" + $scope.newItem.name + "&categoryId=" + $scope.newItem.category;
+        //var data = "name=" + $scope.newItem.name + "&categoryId=" + $scope.newItem.category;
+        var data = { "name" : $scope.newItem.name , "categoryId" : $scope.newItem.category };
         $http({
             url: restEndpoint + "items",
             method: 'POST',
             data: data,
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
 
@@ -45,13 +46,14 @@ mainApp.controller('comboController', function($scope, $http) {
     };
 
     $scope.addNewCategory = function() {
-        var data = "name=" + $scope.newCategory.name;
+        //var data = "name=" + $scope.newCategory.name;
+        var data = { "name": $scope.newCategory.name };
         $http({
             url: restEndpoint + "categories",
             method: 'POST',
             data: data,
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
 
@@ -75,6 +77,7 @@ mainApp.controller('comboController', function($scope, $http) {
             method: 'POST',
             data: data,
             headers: {
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
 
@@ -105,6 +108,7 @@ mainApp.controller('comboController', function($scope, $http) {
             method: 'POST',
             data: data,
             headers: {
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             }
 

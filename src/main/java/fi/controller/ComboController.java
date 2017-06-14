@@ -5,6 +5,7 @@ import fi.model.Item;
 import fi.service.ItemService;
 import fi.wrapper.ItemDependencyWrapper;
 import fi.wrapper.ItemIdArrayWrapper;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,24 +91,24 @@ public class ComboController {
     }
 
     // Create item
-    @PostMapping(value = "/items")
-    public ResponseEntity createItem(@RequestParam String name, @RequestParam int categoryId) {
-        final int itemId = itemService.createItem(name, categoryId);
+    @PostMapping(value = "/items", consumes = "application/json", produces = "application/json")
+    public ResponseEntity createItem(@RequestBody String json) {
+        final JSONObject jsonObject = new JSONObject(json);
+        final int itemId = itemService.createItem(jsonObject.getString("name"), jsonObject.getInt("categoryId"));
         //final int itemId = itemService.createItem(item);
         return new ResponseEntity(Collections.singletonMap("item_id", itemId), HttpStatus.OK);
     }
 
     // Create category
-    @PostMapping(value = "/categories")
-    public ResponseEntity createCategory(@RequestParam String name) {
-        final int categoryId = itemService.createCategory(name);
+    @PostMapping(value = "/categories", consumes = "application/json", produces = "application/json")
+    public ResponseEntity createCategory(@RequestBody String json) {
+        final int categoryId = itemService.createCategory(new JSONObject(json).getString("name"));
         return new ResponseEntity(Collections.singletonMap("category_id", categoryId), HttpStatus.OK);
     }
 
     // Execute combo and return result
-    @PostMapping(value = "/execute", consumes = "application/json")
+    @PostMapping(value = "/execute", consumes = "application/json", produces = "application/json")
     public ResponseEntity executeCombo(@RequestBody ItemIdArrayWrapper items) throws InterruptedException {
-
         final Map<String, Object> resultMap = itemService.executeCombo(items.getItems());
         if (resultMap.get("success").equals(true)) {
             return new ResponseEntity(resultMap, HttpStatus.OK);
