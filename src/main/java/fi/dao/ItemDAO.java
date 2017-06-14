@@ -5,6 +5,7 @@ import fi.model.Item;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ public class ItemDAO {
 
     public List<Item> getAllItems() {
         final Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Item.class);
+        criteria.addOrder(Order.asc("category"));
         return criteria.list();
     }
 

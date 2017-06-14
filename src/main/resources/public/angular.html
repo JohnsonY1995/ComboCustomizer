@@ -75,6 +75,40 @@
                   });
             };
 
+            $scope.startExecute = function() {
+                console.log($scope.selectedItems);
+                var executeItemIds = [];
+                angular.forEach($scope.selectedItems, function(value, key) {
+                    executeItemIds.push(value.item_id);
+                });
+                console.log(executeItemIds);
+
+                $scope.execution = {};
+                $scope.execution.done = false;
+                $scope.execution.processing = true;
+                //var data = "{\"items\": executeItemIds + "}";
+                var data = {"items": executeItemIds };
+                $http({
+                    url: restEndpoint + "execute",
+                    method: 'POST',
+                    data: data,
+                    headers: {
+                        "Accept": "application/json"
+                    }
+
+                 }).then(function successCallback(response) {
+                    $scope.execution.elapsedMs = response.data.msElapsed;
+                    $scope.execution.result = response.data.result;
+                    $scope.execution.done = true;
+                    $scope.execution.processing = false;
+                    console.log(response);
+                  }, function errorCallback(response) {
+                    $scope.execution.done = true;
+                    $scope.execution.processing = false;
+                    console.error(response);
+                  });
+            };
+
          });
     </script>
 
@@ -85,7 +119,7 @@
         <h3>Build a Combo</h3>
         <div class="row">
             <div class="col-sm-6">
-                <h5>Selected Items</h5>
+                <h4>Selected Items</h4>
                 <div ui-tree>
                     <ol ui-tree-nodes="" ng-model="selectedItems">
                         <li ng-repeat="selectedItem in selectedItems" ui-tree-node>
@@ -97,7 +131,7 @@
                 </div>
             </div>
             <div class="col-sm-6">
-                <h5>Available Items</h5>
+                <h4>Available Items</h4>
                 <div ui-tree>
                     <ol ui-tree-nodes="" ng-model="availableItems">
                         <li ng-repeat="availableItem in availableItems" ui-tree-node>
@@ -109,7 +143,13 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="startExecute()">Start</button>
+        <p>
+            <button type="button" class="btn btn-primary" ng-class="execution.processing ? 'disabled' : ''" ng-click="startExecute()">{{ execution.processing ? 'Please wait...' : 'Start' }}</button>
+        </p>
+        <div class="panel panel-success" ng-if="execution.done">
+            <div class="panel-heading">Done (elapsed time: <span ng-bind="execution.elapsedMs"></span>ms)</div>
+            <div class="panel-body" ng-bind="execution.result"></div>
+        </div>
 
         <hr />
         <h3>Add New Category</h3>
