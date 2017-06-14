@@ -69,11 +69,10 @@ public class ComboController {
 
     // Create category
     @PostMapping(value = "/categories")
-    public ResponseEntity createCategory(@RequestParam("name") String name) {
-        final int categoryId = itemService.createCategory(name);
+    public ResponseEntity createCategory(@RequestBody Category category) {
+        final int categoryId = itemService.createCategory(category);
         return new ResponseEntity(Collections.singletonMap("category_id", categoryId), HttpStatus.OK);
     }
-
 
     // Execute combo and return result
     @PostMapping(value = "/execute", consumes = "application/json")

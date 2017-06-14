@@ -31,8 +31,8 @@ public class ItemDAO {
         return criteria.list();
     }
 
-    public int createCategory(final String name) {
-        final Category category = new Category(name);
+    public int createCategory(final Category category) {
+        //final Category category = new Category(name);
         sessionFactory.getCurrentSession().save(category);
         return category.getId();
     }

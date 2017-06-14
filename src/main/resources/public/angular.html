@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Combo Customizer</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/angular-ui-tree.min.css">
+    <link rel="stylesheet" href="css/tree.css">
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script type="text/javascript" src="js/angular-ui-tree.js"></script>
+    <script>
+         var restEndpoint = "http://localhost:8080/";
+         var mainApp = angular.module("ComboCustomizer", ['ui.tree']);
+
+
+         mainApp.controller('comboController', function($scope, $http) {
+            $scope.availableItems = [];
+            $scope.selectedItems = [];
+
+            $scope.getAllItems = function() {
+                $http.get(restEndpoint + "items").then( function(response) {
+                    $scope.availableItems = response.data;
+                });
+            };
+            $scope.getAllItems();
+
+
+
+            $scope.addNewCategory = function() {
+                var data = {"name": "test"};
+                $http({
+                    url: restEndpoint + "categories",
+                    dataType: 'json',
+                    method: 'POST',
+                    data: data,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    }
+
+                }).success(function(response){
+                    console.log(response);
+                }).error(function(error){
+                    console.error(response);
+                });
+            };
+
+         });
+
+
+
+
+     </script>
+
+    <div ng-app="ComboCustomizer" ng-controller="comboController" style="padding:5px">
+        <h2>Combo Customizer</h2>
+        <hr />
+        <h3>Build a Combo</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <h5>Selected Items</h5>
+                <div ui-tree>
+                    <ol ui-tree-nodes="" ng-model="selectedItems">
+                        <li ng-repeat="selectedItem in selectedItems" ui-tree-node>
+                            <div ui-tree-handle>
+                                {{selectedItem.name}}
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <h5>Available Items</h5>
+                <div ui-tree>
+                    <ol ui-tree-nodes="" ng-model="availableItems">
+                        <li ng-repeat="availableItem in availableItems" ui-tree-node>
+                            <div ui-tree-handle>
+                                {{availableItem.name}}
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <h3>Add New Category</h3>
+        <form class="form-inline" ng-submit="addNewCategory()">
+            <div class="form-group">
+                <label for="newCategoryName">Name:</label>
+                <input type="text" class="form-control" id="newCategoryName">
+            </div>
+            <button type="submit" class="btn btn-default">Add</button>
+        </form>
+        <hr />
+
+    </div>
+</body>
+</html>
