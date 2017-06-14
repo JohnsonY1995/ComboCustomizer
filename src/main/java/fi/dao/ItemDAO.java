@@ -30,9 +30,16 @@ public class ItemDAO {
     }
 
     public Map<Item, List<Item>> getAllItemDependencies() {
-        final Criteria criteria = sessionFactory.getCurrentSession().createCriteria("ITEM_DEPENDENCY");
-        criteria.list();
-        return null;
+        final Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Item.class);
+        final List<Item> items = criteria.list();
+        final Map<Item, List<Item>> result = new HashMap<>();
+        for (final Item item : items) {
+            final List<Item> dependees = item.getItemDependencies();
+            if (dependees.size() > 0) {
+                result.put(item, item.getItemDependencies());
+            }
+        }
+        return result;
     }
 
     public List<Category> getAllCategories() {

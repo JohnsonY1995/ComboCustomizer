@@ -3,6 +3,7 @@ package fi.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "ITEM")
@@ -27,7 +28,7 @@ public class Item implements Serializable {
     @JoinTable(name = "ITEM_DEPENDENCY", joinColumns = {
             @JoinColumn(name = "depender", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
             @JoinColumn(name = "dependee", referencedColumnName = "id", nullable = false)})
-    private Collection<Item> itemDependencies;
+    private List<Item> itemDependencies;
 
     public Item() {}
 
@@ -60,11 +61,11 @@ public class Item implements Serializable {
         this.category = category;
     }
 
-    public Collection<Item> getItemDependencies() {
+    public List<Item> getItemDependencies() {
         return itemDependencies;
     }
 
-    public void setItemDependencies(Collection<Item> itemDependencies) {
+    public void setItemDependencies(List<Item> itemDependencies) {
         this.itemDependencies = itemDependencies;
     }
 

@@ -5,11 +5,14 @@ import fi.model.Item;
 import fi.service.ItemService;
 import fi.wrapper.ItemDependencyWrapper;
 import fi.wrapper.ItemIdArrayWrapper;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -44,27 +47,26 @@ public class ComboController {
 
     // Retrieve item dependencies
     @RequestMapping(value = "/itemdependencies", method = RequestMethod.GET, produces = "application/json")
-    public List<Map<String, Object>> getItemDependencies() {
+    public ResponseEntity getItemDependencies() {
+        final JSONArray baseArray = new JSONArray();
+        final Map<Item, List<Item>> itemDependencies = itemService.getAllItemDependencies();
 
-        itemService.getAllItemDependencies();
+        for (final Item item : itemDependencies.keySet()) {
+            final JSONObject dependency = new JSONObject();
 
-        return null;
-
-        /*
-
-        final Iterator<Category> results = itemService.getAllItemDependencies().iterator();
-        final List<Map<String, Object>> resultList = new ArrayList<>();
-
-        while (results.hasNext()) {
-            final Map<String, Object> resultMap = new LinkedHashMap<>();
-            final Category category = results.next();
-            resultMap.put("id", category.getId());
-            resultMap.put("name", category.getName());
-            //resultMap.put("ordering", category.getOrdering());
-            resultList.add(resultMap);
+            final JSONArray dependeesArray = new JSONArray();
+            for (final Item dependee : itemDependencies.get(item)) {
+                dependeesArray.put(dependee.getName());
+            }
+            dependency.put("depender", item.getName());
+            dependency.put("dependents", dependeesArray);
+            baseArray.put(dependency);
         }
-        return resultList;
-        */
+
+        logger.info(baseArray.toString());
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity(baseArray.toString(), HttpStatus.OK);
     }
 
     // Add item dependency
