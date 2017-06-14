@@ -1,80 +1,112 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>Shoe Customizer</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-	<script src="js/jquery.sortable.min.js"></script>
-    <script src="js/shoecustomizer.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	<style>
-		li:not(.disabled) {
-			cursor: move;
-		}
-		.list-group-sortable-connected {
-			min-height:42px;
-			border: 1px solid;
-			border-radius: 4px;
-			border-color: #ddd;
-		}
-	</style>
+    <meta charset="UTF-8">
+    <title>Combo Customizer</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/angular-ui-tree.min.css">
+    <link rel="stylesheet" href="css/combo-customizer.css">
 </head>
 <body>
-    <div class="container">
-        <div class="tab-content">
-                <section>
-                    <div class="row">
-                        <div class="col-sm-6">
-							<h5>Chosen Items</h5>
-                            <ul class="list-group list-group-sortable-connected" id="itemsChosen">
-								<li class="list-group-item list-group-item-info" data-item="itemD">Item D</li>
-								<li class="list-group-item list-group-item-info" data-item="itemE">Item E</li>
-                            </ul>
-                        </div>
-                        <div class="col-sm-6">
-							<h5>Shoebase</h5>
-                            <ul class="list-group list-group-sortable-connected" id="listShoeBase">
-                                <li class="list-group-item list-group-item-info" data-item="itemA" id="testItem" draggable="true"  ondragover="allowDrop(event);" ondrop="alert('x');" >Item A</li>
-								<li class="list-group-item list-group-item-info" data-item="itemB">Item B</li>
-								<li class="list-group-item list-group-item-info" data-item="itemC">Item C</li>
-								<li class="list-group-item list-group-item-info" data-item="itemF">Item F</li>
-								<li class="list-group-item list-group-item-info" data-item="itemG">Item G</li>
-								<li class="list-group-item list-group-item-info" data-item="itemH">Item H</li>
-                            </ul>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="js/angular-ui-tree.min.js"></script>
+    <script src="js/combo-customizer.js"></script>
 
-                            <h5>Shoe Tongue</h5>
-                            <ul class="list-group list-group-sortable-connected" id="listShoeTongue">
-                                <li class="list-group-item list-group-item-info" data-item="itemA">Item A</li>
-                            </ul>
+    <div ng-app="ComboCustomizer" ng-controller="comboController" style="padding:5px">
+        <h2>Combo Customizer</h2>
 
-                            <h5>Shoelace</h5>
-                            <ul class="list-group list-group-sortable-connected" id="listShoelace">
-                                <li class="list-group-item list-group-item-info" data-item="itemA">Item A</li>
-                            </ul>
-
-                            <h5>Text</h5>
-                            <ul class="list-group list-group-sortable-connected" id="listText">
-                                <li class="list-group-item list-group-item-info" data-item="itemA">Item A</li>
-                            </ul>
-
-                            <h5>Logo</h5>
-                            <ul class="list-group list-group-sortable-connected" id="listLogo">
-                                <li class="list-group-item list-group-item-info" data-item="itemA">Item A</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <p>
-                        <button type="button" class="btn btn-success" onclick="buildShoes()">Build my shoes!</button>
-                    </p>
-
-                    <div class="panel panel-info">
-                        <div class="panel-heading">Status</div>
-                        <div class="panel-body" id="statusDisplay"></div>
-                    </div>
-                </section>
+        <hr />
+        <h3>Build a Combo</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>Selected Items</h4>
+                <div ui-tree>
+                    <ol ui-tree-nodes="" ng-model="selectedItems">
+                        <li ng-repeat="selectedItem in selectedItems" ui-tree-node>
+                            <div ui-tree-handle>
+                                {{selectedItem.name}}
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <h4>Available Items</h4>
+                <div ui-tree>
+                    <ol ui-tree-nodes="" ng-model="availableItems">
+                        <li ng-repeat="availableItem in availableItems" ui-tree-node>
+                            <div ui-tree-handle>
+                                {{availableItem.name}}
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
         </div>
+        <p>
+            <button type="button" class="btn btn-primary" ng-class="execution.processing ? 'disabled' : ''" ng-click="startExecute()">{{ execution.processing ? 'Please wait...' : 'Start' }}</button>
+        </p>
+        <div class="panel panel-success" ng-if="execution.done">
+            <div class="panel-heading">Done (elapsed time: <span ng-bind="execution.elapsedMs"></span>ms)</div>
+            <div class="panel-body" style="white-space: pre-line;" ng-bind="execution.result"></div>
+        </div>
+
+        <div class="panel panel-danger" ng-if="execution.failed">
+            <div class="panel-heading">Failed</div>
+            <div class="panel-body" style="white-space: pre-line;" ng-bind="execution.result"></div>
+        </div>
+
+        <hr />
+        <h3>Add New Category</h3>
+        <form class="form-inline" ng-submit="addNewCategory()">
+            <div class="form-group">
+                <label for="newCategoryName">Name:</label>
+                <input type="text" class="form-control" id="newCategoryName" ng-model="newCategory.name">
+            </div>
+            <button type="submit" class="btn btn-default">Add</button>
+        </form>
+
+        <hr />
+        <h3>Add New Item</h3>
+        <form class="form-inline" ng-submit="addNewItem()">
+            <div class="form-group">
+                <label for="newItemName">Name:</label>
+                <input type="text" class="form-control" id="newItemName" ng-model="newItem.name">
+                <label for="newItemCategory">Category:</label>
+                <select id="newItemCategory" ng-model="newItem.category" ng-options="category.id as category.name for category in allCategories">
+                    <option style="display:none" value=""></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">Add</button>
+        </form>
+
+
+        <hr />
+        <h3>Item Dependencies</h3>
+        <table border="1">
+            <tr>
+                <td>Depender</td>
+                <td>Dependee</td>
+            </tr>
+            <tr>
+                <td>X</td>
+                <td>Y</td>
+            </tr>
+        </table>
+        <h4>Add Item Dependency</h4>
+        <form class="form-inline" ng-submit="addNewDependency()">
+            <div class="form-group">
+                <select ng-model="newDependency.depender" ng-options="item.item_id as item.name for item in allItems">
+                    <option style="display:none" value=""></option>
+                </select>
+                <label> depends on </label>
+                <select ng-model="newDependency.dependee" ng-options="item.item_id as item.name for item in allItems">
+                    <option style="display:none" value=""></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">Add Dependency</button>
+        </form>
+
     </div>
 </body>
 </html>
