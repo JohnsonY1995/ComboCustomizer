@@ -17,10 +17,12 @@
          mainApp.controller('comboController', function($scope, $http) {
             $scope.availableItems = [];
             $scope.selectedItems = [];
+            $scope.allItems = [];
 
             $scope.getAllItems = function() {
                 $http.get(restEndpoint + "items").then( function(response) {
                     $scope.availableItems = response.data;
+                    $scope.allItems = response.data;
                 });
             };
             $scope.getAllItems();
@@ -69,6 +71,24 @@
                  }).then(function successCallback(response) {
                     $scope.getAllCategories();
                     $scope.newCategory.name = "";
+                    console.log(response);
+                  }, function errorCallback(response) {
+                    console.error(response);
+                  });
+            };
+
+            $scope.newDependency = {};
+            $scope.addNewDependency = function() {
+                var data = {"depender": $scope.newDependency.depender, "dependee" : $scope.newDependency.dependee };
+                $http({
+                    url: restEndpoint + "itemdependencies",
+                    method: 'POST',
+                    data: data,
+                    headers: {
+                        "Accept": "application/json"
+                    }
+
+                 }).then(function successCallback(response) {
                     console.log(response);
                   }, function errorCallback(response) {
                     console.error(response);
@@ -196,12 +216,14 @@
             </tr>
         </table>
         <h4>Add Item Dependency</h4>
-        <form class="form-inline" ng-submit="addNewItem()">
+        <form class="form-inline" ng-submit="addNewDependency()">
             <div class="form-group">
-                <select ng-model="newDepender" ng-options="x for (x, y) in cars">
+                <select ng-model="newDependency.depender" ng-options="item.item_id as item.name for item in allItems">
+                    <option style="display:none" value=""></option>
                 </select>
                 <label> depends on </label>
-                <select ng-model="newDependee" ng-options="x for (x, y) in cars">
+                <select ng-model="newDependency.dependee" ng-options="item.item_id as item.name for item in allItems">
+                    <option style="display:none" value=""></option>
                 </select>
             </div>
             <button type="submit" class="btn btn-default">Add Dependency</button>

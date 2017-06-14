@@ -1,4 +1,4 @@
-package fi.util;
+package fi.wrapper;
 
 import java.util.List;
 

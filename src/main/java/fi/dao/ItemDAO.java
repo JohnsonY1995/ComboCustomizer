@@ -3,6 +3,7 @@ package fi.dao;
 import fi.model.Category;
 import fi.model.Item;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
@@ -28,9 +29,23 @@ public class ItemDAO {
         return criteria.list();
     }
 
+    public Map<Item, List<Item>> getAllItemDependencies() {
+        final Criteria criteria = sessionFactory.getCurrentSession().createCriteria("ITEM_DEPENDENCY");
+        criteria.list();
+        return null;
+    }
+
     public List<Category> getAllCategories() {
         final Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Category.class);
         return criteria.list();
+    }
+
+    public void createItemDependency(final int depender, final int dependee) {
+        final Session session = sessionFactory.getCurrentSession();
+        final Item dependerItem = session.get(Item.class, depender);
+        final Item dependeeItem = session.get(Item.class, dependee);
+        dependerItem.getItemDependencies().add(dependeeItem);
+        session.save(dependerItem);
     }
 
     public int createCategory(final String name) {
@@ -40,10 +55,11 @@ public class ItemDAO {
     }
 
     public int createItem(final String name, final int categoryId) {
-        final Category category = sessionFactory.getCurrentSession().get(Category.class, categoryId);
+        final Session session = sessionFactory.getCurrentSession();
+        final Category category = session.get(Category.class, categoryId);
         final Item item = new Item(name, category);
         item.setCategory(category);
-        sessionFactory.getCurrentSession().save(item);
+        session.save(item);
         return item.getId();
     }
 

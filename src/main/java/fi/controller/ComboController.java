@@ -3,11 +3,8 @@ package fi.controller;
 import fi.model.Category;
 import fi.model.Item;
 import fi.service.ItemService;
-import fi.util.ItemIdArrayWrapper;
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
+import fi.wrapper.ItemDependencyWrapper;
+import fi.wrapper.ItemIdArrayWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +39,38 @@ public class ComboController {
             resultList.add(resultMap);
         }
         return resultList;
+    }
+
+    // Retrieve item dependencies
+    @RequestMapping(value = "/itemdependencies", method = RequestMethod.GET, produces = "application/json")
+    public List<Map<String, Object>> getItemDependencies() {
+
+        itemService.getAllItemDependencies();
+
+        return null;
+
+        /*
+
+        final Iterator<Category> results = itemService.getAllItemDependencies().iterator();
+        final List<Map<String, Object>> resultList = new ArrayList<>();
+
+        while (results.hasNext()) {
+            final Map<String, Object> resultMap = new LinkedHashMap<>();
+            final Category category = results.next();
+            resultMap.put("id", category.getId());
+            resultMap.put("name", category.getName());
+            //resultMap.put("ordering", category.getOrdering());
+            resultList.add(resultMap);
+        }
+        return resultList;
+        */
+    }
+
+    // Add item dependency
+    @RequestMapping(value = "/itemdependencies", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity addItemDependency(@RequestBody ItemDependencyWrapper itemDependencyWrapper) {
+        itemService.addItemDependency(itemDependencyWrapper.getDepender(), itemDependencyWrapper.getDependee());
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     // Retrieve categories

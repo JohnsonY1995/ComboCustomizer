@@ -24,6 +24,14 @@ public class ItemService {
         return itemDAO.getAllItems();
     }
 
+    public Map<Item, List<Item>> getAllItemDependencies() {
+        return itemDAO.getAllItemDependencies();
+    }
+
+    public void addItemDependency(final int depender, final int dependee) {
+        itemDAO.createItemDependency(depender, dependee);
+    }
+
     public List<Category> getAllCategories() {
         return itemDAO.getAllCategories();
     }
@@ -36,7 +44,7 @@ public class ItemService {
         return itemDAO.createItem(name, categoryId);
     }
 
-    public Map<String,Object> executeCombo(final List<Integer> executeItemIds) throws InterruptedException {
+    public Map<String, Object> executeCombo(final List<Integer> executeItemIds) throws InterruptedException {
         final Map<String, Object> resultMap = new HashMap<>();
 
         final LinkedHashSet<Item> executeItems = itemDAO.getExecuteItemsByIds(executeItemIds);
