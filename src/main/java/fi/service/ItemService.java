@@ -27,8 +27,8 @@ public class ItemService {
         return itemDAO.getAllCategories();
     }
 
-    public int createCategory(final Category category) {
-        return itemDAO.createCategory(category);
+    public int createCategory(final String name) {
+        return itemDAO.createCategory(name);
     }
 
     public int createItem(final String name, final int categoryId) {

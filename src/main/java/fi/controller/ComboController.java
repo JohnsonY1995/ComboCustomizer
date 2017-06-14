@@ -62,15 +62,16 @@ public class ComboController {
 
     // Create item
     @PostMapping(value = "/items")
-    public ResponseEntity createItem(@RequestParam("name") String name, @RequestParam("category_id") int categoryId) {
+    public ResponseEntity createItem(@RequestParam String name, @RequestParam int categoryId) {
         final int itemId = itemService.createItem(name, categoryId);
+        //final int itemId = itemService.createItem(item);
         return new ResponseEntity(Collections.singletonMap("item_id", itemId), HttpStatus.OK);
     }
 
     // Create category
     @PostMapping(value = "/categories")
-    public ResponseEntity createCategory(@RequestBody Category category) {
-        final int categoryId = itemService.createCategory(category);
+    public ResponseEntity createCategory(@RequestParam String name) {
+        final int categoryId = itemService.createCategory(name);
         return new ResponseEntity(Collections.singletonMap("category_id", categoryId), HttpStatus.OK);
     }
 

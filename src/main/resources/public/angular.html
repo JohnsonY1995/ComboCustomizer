@@ -9,11 +9,10 @@
 </head>
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
-    <script type="text/javascript" src="js/angular-ui-tree.js"></script>
+    <script src="js/angular-ui-tree.js"></script>
     <script>
          var restEndpoint = "http://localhost:8080/";
          var mainApp = angular.module("ComboCustomizer", ['ui.tree']);
-
 
          mainApp.controller('comboController', function($scope, $http) {
             $scope.availableItems = [];
@@ -26,36 +25,62 @@
             };
             $scope.getAllItems();
 
+            $scope.allCategories = [];
+            $scope.getAllCategories = function() {
+                $http.get(restEndpoint + "categories").then( function(response) {
+                    $scope.allCategories = response.data;
+                });
+            };
+            $scope.getAllCategories();
 
 
-            $scope.addNewCategory = function() {
-                var data = {"name": "test"};
+            $scope.addNewItem = function() {
+                var data = "name=" + $scope.newItem.name + "&categoryId=" + $scope.newItem.category;
                 $http({
-                    url: restEndpoint + "categories",
-                    dataType: 'json',
+                    url: restEndpoint + "items",
                     method: 'POST',
                     data: data,
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/x-www-form-urlencoded",
                         "Accept": "application/json"
                     }
 
-                }).success(function(response){
+                }).then(function successCallback(response) {
+                    $scope.getAllItems();
+                    $scope.newItem.name = "";
                     console.log(response);
-                }).error(function(error){
+                  }, function errorCallback(response) {
                     console.error(response);
-                });
+                  });
+
+            };
+
+            $scope.addNewCategory = function() {
+                var data = "name=" + $scope.newCategory.name;
+                $http({
+                    url: restEndpoint + "categories",
+                    method: 'POST',
+                    data: data,
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Accept": "application/json"
+                    }
+
+                 }).then(function successCallback(response) {
+                    $scope.getAllCategories();
+                    $scope.newCategory.name = "";
+                    console.log(response);
+                  }, function errorCallback(response) {
+                    console.error(response);
+                  });
             };
 
          });
-
-
-
-
-     </script>
+    </script>
 
     <div ng-app="ComboCustomizer" ng-controller="comboController" style="padding:5px">
         <h2>Combo Customizer</h2>
+
         <hr />
         <h3>Build a Combo</h3>
         <div class="row">
@@ -84,16 +109,56 @@
                 </div>
             </div>
         </div>
+        <button type="button" class="btn btn-primary" onclick="startExecute()">Start</button>
+
         <hr />
         <h3>Add New Category</h3>
         <form class="form-inline" ng-submit="addNewCategory()">
             <div class="form-group">
                 <label for="newCategoryName">Name:</label>
-                <input type="text" class="form-control" id="newCategoryName">
+                <input type="text" class="form-control" id="newCategoryName" ng-model="newCategory.name">
             </div>
             <button type="submit" class="btn btn-default">Add</button>
         </form>
+
         <hr />
+        <h3>Add New Item</h3>
+        <form class="form-inline" ng-submit="addNewItem()">
+            <div class="form-group">
+                <label for="newItemName">Name:</label>
+                <input type="text" class="form-control" id="newItemName" ng-model="newItem.name">
+                <label for="newItemCategory">Category:</label>
+                <select id="newItemCategory" ng-model="newItem.category" ng-options="category.id as category.name for category in allCategories">
+                    <option style="display:none" value=""></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">Add</button>
+        </form>
+
+
+        <hr />
+        <h3>Item Dependencies</h3>
+        <table border="1">
+            <tr>
+                <td>Depender</td>
+                <td>Dependee</td>
+            </tr>
+            <tr>
+                <td>X</td>
+                <td>Y</td>
+            </tr>
+        </table>
+        <h4>Add Item Dependency</h4>
+        <form class="form-inline" ng-submit="addNewItem()">
+            <div class="form-group">
+                <select ng-model="newDepender" ng-options="x for (x, y) in cars">
+                </select>
+                <label> depends on </label>
+                <select ng-model="newDependee" ng-options="x for (x, y) in cars">
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default">Add Dependency</button>
+        </form>
 
     </div>
 </body>

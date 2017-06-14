@@ -31,8 +31,8 @@ public class ItemDAO {
         return criteria.list();
     }
 
-    public int createCategory(final Category category) {
-        //final Category category = new Category(name);
+    public int createCategory(final String name) {
+        final Category category = new Category(name);
         sessionFactory.getCurrentSession().save(category);
         return category.getId();
     }
@@ -40,6 +40,7 @@ public class ItemDAO {
     public int createItem(final String name, final int categoryId) {
         final Category category = sessionFactory.getCurrentSession().get(Category.class, categoryId);
         final Item item = new Item(name, category);
+        item.setCategory(category);
         sessionFactory.getCurrentSession().save(item);
         return item.getId();
     }
