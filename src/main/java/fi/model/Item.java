@@ -1,11 +1,14 @@
 package fi.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
 @Table(name = "ITEM")
-public class Item {
+public class Item implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
@@ -25,7 +28,6 @@ public class Item {
             @JoinColumn(name = "depender", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
             @JoinColumn(name = "dependee", referencedColumnName = "id", nullable = false)})
     private Collection<Item> itemDependencies;
-
 
     public Item() {}
 
