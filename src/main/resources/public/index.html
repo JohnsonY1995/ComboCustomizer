@@ -53,6 +53,11 @@
             <div class="panel-body" style="white-space: pre-line;" ng-bind="execution.result"></div>
         </div>
 
+        <div class="panel panel-warning" ng-if="execution.processing">
+            <div class="panel-heading">Executing...</div>
+            <div class="panel-body" style="white-space: pre-line;" ng-bind="execution.processingStatus"></div>
+        </div>
+
         <div class="panel panel-danger" ng-if="execution.failed">
             <div class="panel-heading">Failed</div>
             <div class="panel-body" style="white-space: pre-line;" ng-bind="execution.result"></div>

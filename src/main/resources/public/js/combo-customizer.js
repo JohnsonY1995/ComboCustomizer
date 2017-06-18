@@ -111,13 +111,14 @@ mainApp.controller('comboController', function($scope, $http) {
         $scope.execution.done = false;
         $scope.execution.failed = false;
         $scope.execution.processing = true;
+        $scope.execution.processingStatus = '';
 
-        var guid = generateGUID();
+        var guid = $scope.generateGUID();
         var data = {
             "items": executeItemIds,
             "guid": guid
         };
-        connect(guid);
+        $scope.connect(guid);
         $http({
             url: restEndpoint + "execute",
             method: 'POST',
@@ -138,42 +139,46 @@ mainApp.controller('comboController', function($scope, $http) {
             $scope.execution.result = response.data.failReason;
             $scope.execution.done = false;
             $scope.execution.processing = false;
-            disconnect();
+            $scope.disconnect();
             console.error(response);
         });
     };
 
+
+    // WebSocket for execution status
+    var stompClient = null;
+
+    $scope.connect = function (guid) {
+        var socket = new SockJS('/executions');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function(frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/executions/' + guid, function(messageOutput) {
+                messageJson = JSON.parse(messageOutput.body);
+                console.log(messageJson);
+                $scope.execution.processingStatus = messageJson.timestamp + " " + messageJson.message;
+                $scope.$apply();
+                if (messageJson.hasFinished) {
+                    $scope.disconnect();
+                    console.log("Execution complete. WebSocket closed.");
+                }
+            });
+        });
+    };
+
+    $scope.disconnect = function() {
+        if(stompClient != null) {
+            stompClient.disconnect();
+        }
+        console.log("Disconnected");
+    };
+
+    $scope.generateGUID = function() {
+        var S4 = function() {
+            return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+        };
+        return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    };
+
 });
 
-// WebSocket for execution status
-var stompClient = null;
-
-function connect(guid) {
-    var socket = new SockJS('/executions');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function(frame) {
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/executions/' + guid, function(messageOutput) {
-            messageJson = JSON.parse(messageOutput.body);
-            console.log(messageJson);
-            if (messageJson.hasFinished) {
-                disconnect();
-                console.log("Execution complete. WebSocket closed.");
-            }
-        });
-    });
-}
-
-function disconnect() {
-    if(stompClient != null) {
-        stompClient.disconnect();
-    }
-    console.log("Disconnected");
-}
-
-function generateGUID() {
-    var S4 = function() {
-        return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
-    };
-    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
-}
