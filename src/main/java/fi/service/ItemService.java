@@ -1,5 +1,6 @@
 package fi.service;
 
+import fi.controller.ComboController;
 import fi.dao.ItemDAO;
 import fi.model.Category;
 import fi.model.Item;
@@ -14,7 +15,7 @@ import java.util.*;
 public class ItemService {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
-    private static final int ITEM_EXEC_TIME = 1000;
+    private static final int ITEM_EXEC_TIME = 3000;
     private static List<String> failReasons = new ArrayList<>();
 
     @Autowired
@@ -44,7 +45,7 @@ public class ItemService {
         return itemDAO.createItem(name, categoryId);
     }
 
-    public Map<String, Object> executeCombo(final List<Integer> executeItemIds) throws InterruptedException {
+    public Map<String, Object> executeCombo(final List<Integer> executeItemIds, final ComboController comboController, final String guid) throws InterruptedException {
         final Map<String, Object> resultMap = new HashMap<>();
 
         final LinkedHashSet<Item> executeItems = itemDAO.getExecuteItemsByIds(executeItemIds);
@@ -66,8 +67,9 @@ public class ItemService {
         while (itemIdIterator.hasNext()) {
             final Item executeItem = itemDAO.getItemById(itemIdIterator.next());
             executionResult += executeItem.getName() + " + ";
-            logger.info("Running " + executeItem);
-            logger.info("Sleeping for " + ITEM_EXEC_TIME + "ms");
+            final String status = "Running " + executeItem;
+            logger.info(status);
+            comboController.sendStatus(status, guid, !itemIdIterator.hasNext());
             Thread.sleep(ITEM_EXEC_TIME);
         }
         executionResult = executionResult.substring(0, executionResult.length() - 3);

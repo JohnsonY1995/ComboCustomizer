@@ -3,8 +3,9 @@ package fi.controller;
 import fi.model.Category;
 import fi.model.Item;
 import fi.service.ItemService;
+import fi.wrapper.ExecutionStatusWrapper;
 import fi.wrapper.ItemDependencyWrapper;
-import fi.wrapper.ItemIdArrayWrapper;
+import fi.wrapper.ExecutionInfoWrapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -14,9 +15,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -26,7 +29,10 @@ public class ComboController {
     private static final Logger logger = LoggerFactory.getLogger(ComboController.class);
 
     @Autowired
-    ItemService itemService;
+    private ItemService itemService;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     // Retrieve items
     @RequestMapping(value = "/items", method = RequestMethod.GET, produces = "application/json")
@@ -110,13 +116,20 @@ public class ComboController {
 
     // Execute combo and return result
     @PostMapping(value = "/execute", consumes = "application/json", produces = "application/json")
-    public ResponseEntity executeCombo(@RequestBody ItemIdArrayWrapper items) throws InterruptedException {
-        final Map<String, Object> resultMap = itemService.executeCombo(items.getItems());
+    public ResponseEntity executeCombo(@RequestBody ExecutionInfoWrapper executionInfoWrapper) throws InterruptedException {
+        final Map<String, Object> resultMap = itemService.executeCombo(executionInfoWrapper.getItems(), this, executionInfoWrapper.getGuid());
         if (resultMap.get("success").equals(true)) {
             return new ResponseEntity(resultMap, HttpStatus.OK);
         } else {
             return new ResponseEntity(resultMap, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public void sendStatus(final String message, final String guid, final boolean hasFinished) {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        logger.info("Sending status to " + guid + ": " + message);
+        simpMessagingTemplate.convertAndSend("/topic/executions/" + guid, new ExecutionStatusWrapper(simpleDateFormat.format(new Date()), message, hasFinished));
     }
 
     // Health check for GCP
