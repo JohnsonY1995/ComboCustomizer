@@ -8,17 +8,17 @@ import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-@Table(name = "CATEGORY")
+@Table(name = "category")
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue
-    @Column(name = "id")
+    @Column(name = "catid")
     private int id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "catname", nullable = false)
     private String name;
 
 //    @Column(name = "ordering", nullable = false)

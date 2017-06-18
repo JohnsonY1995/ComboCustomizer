@@ -1,16 +1,16 @@
-INSERT INTO CATEGORY (NAME) VALUES ('shoebase');
-INSERT INTO CATEGORY (NAME) VALUES ('shoebody');
-INSERT INTO CATEGORY (NAME) VALUES ('shoelaces');
-INSERT INTO CATEGORY (NAME) VALUES ('logo');
-
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('white shoebase', 1);
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('black shoebase', 1);
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('green shoebody', 2);
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('brown shoebody', 2);
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('lime shoelaces', 3);
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('black shoelaces', 3);
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('xmas tree logo', 4);
-INSERT INTO ITEM (NAME, CATEGORY) VALUES ('banana logo', 4);
-
-INSERT INTO ITEM_DEPENDENCY (DEPENDER, DEPENDEE) VALUES (7, 4);
-INSERT INTO ITEM_DEPENDENCY (DEPENDER, DEPENDEE) VALUES (8, 3);
+-- INSERT INTO category (catname) VALUES ('shoebase');
+-- INSERT INTO category (catname) VALUES ('shoebody');
+-- INSERT INTO category (catname) VALUES ('shoelaces');
+-- INSERT INTO category (catname) VALUES ('logo');
+--
+-- INSERT INTO item (itmid, catid) VALUES ('white shoebase', 1);
+-- INSERT INTO item (itmid, catid) VALUES ('black shoebase', 1);
+-- INSERT INTO item (itmid, catid) VALUES ('green shoebody', 2);
+-- INSERT INTO item (itmid, catid) VALUES ('brown shoebody', 2);
+-- INSERT INTO item (itmid, catid) VALUES ('lime shoelaces', 3);
+-- INSERT INTO item (itmid, catid) VALUES ('black shoelaces', 3);
+-- INSERT INTO item (itmid, catid) VALUES ('xmas tree logo', 4);
+-- INSERT INTO item (itmid, catid) VALUES ('banana logo', 4);
+--
+-- INSERT INTO item_dependency (depender, dependee) VALUES (7, 4);
+-- INSERT INTO item_dependency (depender, dependee) VALUES (8, 3);

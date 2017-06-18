@@ -1,4 +1,6 @@
-var restEndpoint = "http://localhost:8080/";
+//var restEndpoint = "http://localhost:8080/";
+var restEndpoint = "http://combo-customizer.appspot.com/";
+
 var mainApp = angular.module("ComboCustomizer", ['ui.tree']);
 
 mainApp.controller('comboController', function($scope, $http) {

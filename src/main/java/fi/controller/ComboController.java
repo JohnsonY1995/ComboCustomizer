@@ -119,4 +119,10 @@ public class ComboController {
         }
     }
 
+    // Health check for GCP
+    @RequestMapping(value = "/_ah/health", method = RequestMethod.GET)
+    public ResponseEntity gcpHealthCheck() {
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 }
