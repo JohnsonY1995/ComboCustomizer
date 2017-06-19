@@ -1,5 +1,5 @@
-var restEndpoint = "http://localhost:8080/";
-//var restEndpoint = "http://combo-customizer.appspot.com/";
+//var restEndpoint = "http://localhost:8080/";
+var restEndpoint = "http://combo-customizer.appspot.com/";
 
 var mainApp = angular.module("ComboCustomizer", ['ui.tree']);
 
@@ -160,7 +160,7 @@ mainApp.controller('comboController', function($scope, $http) {
                 $scope.$apply();
                 if (messageJson.hasFinished) {
                     $scope.disconnect();
-                    console.log("Execution complete. WebSocket closed.");
+                    console.log("Server declared the last message was sent. WebSocket closed.");
                 }
             });
         });

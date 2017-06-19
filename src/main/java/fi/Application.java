@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ImportResource(value="classpath:hsql_cfg.xml")
+//@ImportResource(value="classpath:hsql_cfg.xml")
 public class Application {
 
     public static void main(String[] args) {

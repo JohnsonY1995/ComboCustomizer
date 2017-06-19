@@ -15,7 +15,7 @@ import java.util.*;
 public class ItemService {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
-    private static final int ITEM_EXEC_TIME = 3000;
+    private static final int ITEM_EXEC_TIME = 10000;
     private static List<String> failReasons = new ArrayList<>();
 
     @Autowired
