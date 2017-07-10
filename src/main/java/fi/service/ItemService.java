@@ -15,7 +15,7 @@ import java.util.*;
 public class ItemService {
 
     private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
-    private static final int ITEM_EXEC_TIME = 10000;
+    private static final int ITEM_EXEC_TIME = 7000;
     private static List<String> failReasons = new ArrayList<>();
 
     @Autowired
@@ -69,8 +69,9 @@ public class ItemService {
             executionResult += executeItem.getName() + " + ";
             final String status = "Running " + executeItem;
             logger.info(status);
+            Thread.sleep(ITEM_EXEC_TIME / 2);
             comboController.sendStatus(status, guid, !itemIdIterator.hasNext());
-            Thread.sleep(ITEM_EXEC_TIME);
+            Thread.sleep(ITEM_EXEC_TIME / 2);
         }
         executionResult = executionResult.substring(0, executionResult.length() - 3);
         final long msElapsed = System.currentTimeMillis() - startTime;
